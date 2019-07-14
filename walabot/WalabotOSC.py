@@ -7,7 +7,7 @@ import argparse
 import random
 import time
 
- from pythonosc import osc_message_builder
+from pythonosc import osc_message_builder
 from pythonosc import udp_client
 try:  # for Python 2
     import Tkinter as tk
