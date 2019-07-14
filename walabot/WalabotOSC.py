@@ -20,7 +20,7 @@ except NameError:
 
 from SensorTargets import SensorTargetsApp
 
- def sensorTargets():
+def sensorTargets():
     """ Main app function. Init the main app class, configure the window
         and start the mainloop.
     """
@@ -35,7 +35,7 @@ from SensorTargets import SensorTargetsApp
     root.minsize(width=root.winfo_reqwidth(), height=root.winfo_reqheight())
     root.mainloop()
 
- if __name__ == "__main__":
+if __name__ == "__main__":
     load_dotenv()
     print('connecting')
     parser = argparse.ArgumentParser()
