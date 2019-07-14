@@ -49,7 +49,7 @@ if __name__ == "__main__":
     client = udp_client.SimpleUDPClient(args.ip, args.port)
     sensorTargets()
 
-     for x in range(10):
+    for x in range(10):
         r= random.random()
         print('sending: ')
         print(r)
