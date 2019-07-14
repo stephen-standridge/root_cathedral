@@ -1,8 +1,10 @@
 """
 OSC client that transmits walabot data over a network
 """
-from dotenv import load_dotenv
 import os
+from dotenv import dotenv
+dotenv = Dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+os.environ.update(dotenv)
 import argparse
 import random
 import time
@@ -36,7 +38,7 @@ def sensorTargets():
     root.mainloop()
 
 if __name__ == "__main__":
-    load_dotenv()
+
     print('connecting')
     parser = argparse.ArgumentParser()
     parser.add_argument("--ip", default=os.getenv("IP_OUT"),
