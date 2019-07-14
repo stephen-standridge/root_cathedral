@@ -1,7 +1,7 @@
 """
 OSC client that transmits walabot data over a network
 """
-from dotenv import load_dotenv
+import os
 from dotenv import dotenv
 dotenv = Dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 os.environ.update(dotenv)
