@@ -2,9 +2,9 @@
 OSC client that transmits walabot data over a network
 """
 import os
-from dotenv import Dotenv
-dotenv = Dotenv(os.path.join(os.path.dirname(__file__), ".env"))
-os.environ.update(dotenv)
+# from dotenv import Dotenv
+# dotenv = Dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+# os.environ.update(dotenv)
 import argparse
 import random
 import time
@@ -32,7 +32,8 @@ def sensorTargets():
     root.tk.call("wm", "iconphoto", root._w, iconFile)  # set app icon
     root.option_add("*Font", "TkFixedFont")
     SensorTargetsApp(root).pack(fill=tk.BOTH, expand=tk.YES)
-    root.geometry("+{}+{}".format(os.getenv("APP_X"), os.getenv("APP_Y")))  # set window location
+    root.geometry("+{}+{}".format(50, 50))  # set window location
+#     root.geometry("+{}+{}".format(os.getenv("APP_X"), os.getenv("APP_Y")))  # set window location
     root.update()
     root.minsize(width=root.winfo_reqwidth(), height=root.winfo_reqheight())
     root.mainloop()
@@ -40,9 +41,13 @@ def sensorTargets():
 if __name__ == "__main__":
     print('connecting')
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", default=os.getenv("IP_OUT"),
+#     parser.add_argument("--ip", default=os.getenv("IP_OUT"),
+#         help="The ip of the OSC server")
+    parser.add_argument("--ip", default="192.168.165.149",
         help="The ip of the OSC server")
-    parser.add_argument("--port", type=int, default=os.getenv("PORT_OUT"),
+#     parser.add_argument("--port", type=int, default=os.getenv("PORT_OUT"),
+#         help="The port the OSC server is listening on")
+    parser.add_argument("--port", type=int, default="8000",
         help="The port the OSC server is listening on")
 
     args = parser.parse_args()
@@ -54,5 +59,6 @@ if __name__ == "__main__":
         r= random.random()
         print('sending: ')
         print(r)
-        client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
+#         client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
+        client.send_message("{}/{}".format("walabot1", "random"), r)
         time.sleep(1)
