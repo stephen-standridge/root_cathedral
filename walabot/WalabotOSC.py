@@ -1,15 +1,13 @@
 """
 OSC client that transmits walabot data over a network
 """
+from dotenv import load_dotenv
 import os
-# from dotenv import Dotenv
-# dotenv = Dotenv(os.path.join(os.path.dirname(__file__), ".env"))
-# os.environ.update(dotenv)
 import argparse
 import random
 import time
 
-from pythonosc import osc_message_builder
+ from pythonosc import osc_message_builder
 from pythonosc import udp_client
 try:  # for Python 2
     import Tkinter as tk
@@ -20,9 +18,9 @@ try:  # for Python 2
 except NameError:
     pass
 
-from SensorTargets import SensorTargetsApp
+ from SensorTargets import SensorTargetsApp
 
-def sensorTargets():
+ def sensorTargets():
     """ Main app function. Init the main app class, configure the window
         and start the mainloop.
     """
@@ -32,33 +30,28 @@ def sensorTargets():
     root.tk.call("wm", "iconphoto", root._w, iconFile)  # set app icon
     root.option_add("*Font", "TkFixedFont")
     SensorTargetsApp(root).pack(fill=tk.BOTH, expand=tk.YES)
-    root.geometry("+{}+{}".format(50, 50))  # set window location
-#     root.geometry("+{}+{}".format(os.getenv("APP_X"), os.getenv("APP_Y")))  # set window location
+    root.geometry("+{}+{}".format(os.getenv("APP_X"), os.getenv("APP_Y")))  # set window location
     root.update()
     root.minsize(width=root.winfo_reqwidth(), height=root.winfo_reqheight())
     root.mainloop()
 
-if __name__ == "__main__":
+ if __name__ == "__main__":
+    load_dotenv()
     print('connecting')
     parser = argparse.ArgumentParser()
-#     parser.add_argument("--ip", default=os.getenv("IP_OUT"),
-#         help="The ip of the OSC server")
-    parser.add_argument("--ip", default="192.168.165.149",
+    parser.add_argument("--ip", default=os.getenv("IP_OUT"),
         help="The ip of the OSC server")
-#     parser.add_argument("--port", type=int, default=os.getenv("PORT_OUT"),
-#         help="The port the OSC server is listening on")
-    parser.add_argument("--port", type=int, default="8000",
+    parser.add_argument("--port", type=int, default=os.getenv("PORT_OUT"),
         help="The port the OSC server is listening on")
 
-    args = parser.parse_args()
+     args = parser.parse_args()
 
-    client = udp_client.SimpleUDPClient(args.ip, args.port)
+     client = udp_client.SimpleUDPClient(args.ip, args.port)
     sensorTargets()
 
-    for x in range(10):
+     for x in range(10):
         r= random.random()
         print('sending: ')
         print(r)
-#         client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
-        client.send_message("{}/{}".format("walabot1", "random"), r)
-        time.sleep(1)
+        client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
+        time.sleep(1) 
