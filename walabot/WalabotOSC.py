@@ -18,7 +18,7 @@ try:  # for Python 2
 except NameError:
     pass
 
- from SensorTargets import SensorTargetsApp
+from SensorTargets import SensorTargetsApp
 
  def sensorTargets():
     """ Main app function. Init the main app class, configure the window
@@ -44,9 +44,9 @@ except NameError:
     parser.add_argument("--port", type=int, default=os.getenv("PORT_OUT"),
         help="The port the OSC server is listening on")
 
-     args = parser.parse_args()
+    args = parser.parse_args()
 
-     client = udp_client.SimpleUDPClient(args.ip, args.port)
+    client = udp_client.SimpleUDPClient(args.ip, args.port)
     sensorTargets()
 
      for x in range(10):
