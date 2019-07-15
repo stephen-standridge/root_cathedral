@@ -56,4 +56,4 @@ if __name__ == "__main__":
         print('sending: ')
         print(r)
         client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
-        time.sleep(1)
+        time.sleep(1) 
