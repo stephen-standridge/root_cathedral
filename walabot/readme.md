@@ -35,10 +35,12 @@ from: https://github.com/Walabot-Projects/Walabot-HelloWalabot
 pip install python-osc python-dotenv
 ```
 
-##Run the program
+#Move the .service file
 ```
-cd root_cathedral/walabot
-python3 WalabotOSC.py
+cp root_cathedral/walabot/walabot.service ~/etc/systemd/system/walabot.service
+sudo systemctl enable walabot
+sudo systemctl start walabot
+sudo journalctl -f -u  walabot
 ```
 
 #TODO
