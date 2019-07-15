@@ -37,7 +37,7 @@ pip install python-osc python-dotenv
 
 #Move the .service file
 ```
-cp root_cathedral/walabot/walabot.service ~/etc/systemd/system/walabot.service
+sudo cp root_cathedral/walabot/walabot.service /etc/systemd/system
 sudo systemctl enable walabot
 sudo systemctl start walabot
 sudo journalctl -f -u  walabot
