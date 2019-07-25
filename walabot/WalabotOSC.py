@@ -7,6 +7,8 @@ import argparse
 import random
 import time
 
+# from breathing_handler import BreathingHandler
+# from walabot_osc_publisher import WalabotOSC
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
 try:  # for Python 2
@@ -46,9 +48,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    client = udp_client.SimpleUDPClient(args.ip, args.port)
-    # sensorTargets()
-
+    # breathingHandler = BreathingHandler()
+    # breathingHandler.out_ip = os.getenv("IP_OUT")
+    # breathingHandler.out_port = os.getenv("PORT_OUT")
+    # breathingHandler.in_ip = os.getenv("IP_IN")
+    # breathingHandler.in_port = os.getenv("IN_PORT")
+    # walabotOSC = WalabotOSC(breathingHandler)
     for x in range(10):
         r= random.random()
         print('sending: ')

@@ -7,7 +7,7 @@ from threading import Thread
 import json
 
 
-class WalabotMQTT:
+class WalabotOSC:
     """
         MQTT client which publishes walabots data.
         import to WalabotHandler is reburied.

@@ -12,11 +12,11 @@ arena_params = {
 
 class BreathingHandler(WalabotHandler):
 
-    connection_id = ''
-    broker_ip_address = ""
-    broker_port = 123
-    broker_username = ''
-    broker_password = ''
+    out_ip = ''
+    out_port = ''
+    in_ip = ''
+    in_port = ''
+    device_name = ''
 
     def __init__(self):
         super(BreathingHandler, self).__init__()
