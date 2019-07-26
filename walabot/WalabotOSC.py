@@ -44,11 +44,11 @@ if __name__ == "__main__":
 
     # walabotOSC = WalabotOSC(targetsHandler)
     print("Sending to {}:{}".format(os.getenv("IP_OUT"), int(os.getenv("PORT_OUT")) ))
-    print(int(os.getenv("PORT_OUT")))
     client = udp_client.SimpleUDPClient(os.getenv("IP_OUT"), int(os.getenv("PORT_OUT")))
     for x in range(10):
         r= random.random()
-        print('sending: ')
+        channel = "{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME"))
+        print('sending on channel {}'.format(channel))
         print(r)
-        client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
+        client.send_message(channel, r)
         time.sleep(1) 
