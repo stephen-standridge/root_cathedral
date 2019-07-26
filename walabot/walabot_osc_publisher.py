@@ -1,5 +1,6 @@
 from pythonosc import dispatcher
 from pythonosc import osc_server
+from pythonosc import udp_client
 
 from enum import Enum
 from time import sleep
@@ -17,6 +18,7 @@ class WalabotOSC:
         WORKING = 1
 
     def __init__(self, walabotHandler):
+        print("Initializing")
         self.__walabot = walabotHandler()
         if self.__walabot.in_ip is not None and self.__walabot.in_port is not None:
             self.__dispatcher = dispatcher.Dispatcher()
@@ -25,22 +27,24 @@ class WalabotOSC:
             self.__dispatcher.map("/disconnect", self.__on_disconnect)
 
             self.__osc_server = osc_server.ThreadingOSCUDPServer(
-            (self.__walabot.in_ip, self.__walabot.in_port), self.__dispatcher)
+            (self.__walabot.in_ip, int(self.__walabot.in_port)), self.__dispatcher)
             self.__osc_server.serve_forever()
         else: 
             print('no IN ip or port specified')
         if self.__walabot.out_ip is not None and self.__walabot.out_port is not None:
-            self.__osc_client = udp_client.SimpleUDPClient(self.__walabot.out_ip, self.__walabot.out_port)
+            self.__osc_client = udp_client.SimpleUDPClient(self.__walabot.out_ip, int(self.__walabot.out_port))
         else:
             print('no IN ip or port specified')
         self.__status = self.Status.PENDING
         self.__working_thread = 0
 
     def __on_stop(self):
+        print("Stopped")
         self.__status = self.Status.PENDING
         self.__working_thread.join(timeout=2)
 
     def __on_start(self):
+        print("Started")
         self.__status = self.Status.WORKING
         self.__working_thread = Thread(target=self.__data_loop)
         self.__working_thread.start()    
