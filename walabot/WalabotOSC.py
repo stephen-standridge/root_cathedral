@@ -1,13 +1,13 @@
 """
 OSC client that transmits walabot data over a network
 """
-# from dotenv import load_dotenv
-# import os
+from dotenv import load_dotenv
+import os
 import random
 import time
 
-from walabot_osc_publisher import WalabotOSC
-from targets_handler import TargetsHandler
+# from walabot_osc_publisher import WalabotOSC
+# from targets_handler import TargetsHandler
 # from breathing_handler import BreathingHandler
 # from walabot_osc_publisher import WalabotOSC
 from pythonosc import osc_message_builder
@@ -42,11 +42,11 @@ if __name__ == "__main__":
     load_dotenv()
     print('connecting')
 
-    walabotOSC = WalabotOSC(targetsHandler)
+    # walabotOSC = WalabotOSC(targetsHandler)
 
-    # for x in range(10):
-    #     r= random.random()
-    #     print('sending: ')
-    #     print(r)
-    #     client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
-    #     time.sleep(1) 
+    for x in range(10):
+        r= random.random()
+        print('sending: ')
+        print(r)
+        client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
+        time.sleep(1) 
