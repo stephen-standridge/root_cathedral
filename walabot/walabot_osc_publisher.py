@@ -54,25 +54,25 @@ class WalabotOSC:
     def __data_loop(self):
         is_connected = self.__walabot.start()
         if self.__walabot.device_name is None:
-            self.__osc_client.send_message("walabot/error", -2)
+            self.__osc_client.send_message("/walabot/error", -2)
             self.__status = self.Status.PENDING             
         else if not is_connected:
-            self.__osc_client.send_message("walabot/{}/error".format( self.__walabot.device_name), -1)
+            self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.device_name), -1)
             self.__status = self.Status.PENDING       
         else:
-            self.__osc_client.send_message("walabot/{}/start".format( self.__walabot.device_name), 0)
+            self.__osc_client.send_message("/walabot/{}/start".format( self.__walabot.device_name), 0)
         error_counter = 0
         while self.__status is self.Status.WORKING:
             data = dict()
             rc = self.__walabot.get_data(data)
             if rc:
                 for key, value in data:
-                    self.__osc_client.send_message("walabot/{}/{}".format( self.__walabot.device_name, key), value)
+                    self.__osc_client.send_message("/walabot/{}/{}".format( self.__walabot.device_name, key), value)
                 error_counter = 0
             else:
                 error_counter += 1
                 if error_counter >= 100:
-                    self.__osc_client.send_message("walabot/{}/error".format( self.__walabot.device_name), error_counter)
+                    self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.device_name), error_counter)
                     self.__status = self.Status.PENDING
             sleep(0.03)
         self.__walabot.stop()
