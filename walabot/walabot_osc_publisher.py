@@ -20,7 +20,15 @@ class WalabotOSC:
     def __init__(self, walabotHandler):
         print("Initializing")
         self.__walabot = walabotHandler()
+
+        if self.__walabot.out_ip is not None and self.__walabot.out_port is not None:
+            print("Starting client at {}:{}".format(self.__walabot.out_ip, self.__walabot.out_port))
+            self.__osc_client = udp_client.SimpleUDPClient(self.__walabot.out_ip, int(self.__walabot.out_port))
+        else:
+            print('no OUT ip or port specified')
+
         if self.__walabot.in_ip is not None and self.__walabot.in_port is not None:
+            print("Starting server at {}:{}".format(self.__walabot.in_ip, self.__walabot.in_port))
             self.__dispatcher = dispatcher.Dispatcher()
             self.__dispatcher.map("/stop", self.__on_stop)
             self.__dispatcher.map("/start", self.__on_start)
@@ -30,10 +38,6 @@ class WalabotOSC:
             (self.__walabot.in_ip, int(self.__walabot.in_port)), self.__dispatcher)
             self.__osc_server.serve_forever()
         else: 
-            print('no IN ip or port specified')
-        if self.__walabot.out_ip is not None and self.__walabot.out_port is not None:
-            self.__osc_client = udp_client.SimpleUDPClient(self.__walabot.out_ip, int(self.__walabot.out_port))
-        else:
             print('no IN ip or port specified')
         self.__status = self.Status.PENDING
         self.__working_thread = 0
