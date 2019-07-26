@@ -8,7 +8,8 @@ load_dotenv()
 arena_params = {
                 'minInCm': 30,          'maxInCm': 200,        'resInCm': 3,
                 'minIndegrees': -15,    'maxIndegrees': 15,    'resIndegrees': 5,
-                'minPhiInDegrees': -60, 'maxPhiInDegrees': 60, 'resPhiInDegrees': 5
+                'minPhiInDegrees': -60, 'maxPhiInDegrees': 60, 'resPhiInDegrees': 5,
+                'mtiMode': True
                 }
 
 
