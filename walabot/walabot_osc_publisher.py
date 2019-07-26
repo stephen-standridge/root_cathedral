@@ -38,18 +38,18 @@ class WalabotOSC:
         self.__status = self.Status.PENDING
         self.__working_thread = 0
 
-    def __on_stop(self):
+    def __on_stop(self, address, *args):
         print("Stopped")
         self.__status = self.Status.PENDING
         self.__working_thread.join(timeout=2)
 
-    def __on_start(self):
+    def __on_start(self, address, *args):
         print("Started")
         self.__status = self.Status.WORKING
         self.__working_thread = Thread(target=self.__data_loop)
         self.__working_thread.start()    
 
-    def __on_disconnect(self):
+    def __on_disconnect(self, address, *args):
         if self.__status is self.Status.WORKING:
             self.__status = self.Status.PENDING
             self.__working_thread.join(timeout=2)
@@ -60,7 +60,7 @@ class WalabotOSC:
         if self.__walabot.device_name is None:
             self.__osc_client.send_message("/walabot/error", -2)
             self.__status = self.Status.PENDING             
-        else if not is_connected:
+        elif not is_connected:
             self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.device_name), -1)
             self.__status = self.Status.PENDING       
         else:
@@ -70,7 +70,7 @@ class WalabotOSC:
             data = dict()
             rc = self.__walabot.get_data(data)
             if rc:
-                for key, value in data:
+                for key, value in data.items():
                     self.__osc_client.send_message("/walabot/{}/{}".format( self.__walabot.device_name, key), value)
                 error_counter = 0
             else:

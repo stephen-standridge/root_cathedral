@@ -17,7 +17,7 @@ class TargetsHandler(WalabotHandler):
     out_ip = os.getenv("IP_OUT")
     out_port = os.getenv("PORT_OUT")
     in_ip = os.getenv("IP_IN")
-    in_port = os.getenv("IN_PORT")
+    in_port = os.getenv("PORT_IN")
     device_name = os.getenv("DEVICE_NAME")
 
     def __init__(self):
@@ -59,7 +59,7 @@ class TargetsHandler(WalabotHandler):
             self._wlbt.Trigger()
             raw_targets = self._wlbt.GetTrackerTargets()
             data = [[target.xPosCm, target.yPosCm, target.zPosCm] for target in raw_targets]
-            for key, value in data
+            for key, value in enumerate(data):
                 data_dict['target_{}'.format(key)] = value
         except self._wlbt.WalabotError:
             traceback.print_exc()
