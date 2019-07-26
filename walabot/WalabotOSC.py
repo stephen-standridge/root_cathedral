@@ -1,12 +1,13 @@
 """
 OSC client that transmits walabot data over a network
 """
-from dotenv import load_dotenv
-import os
-import argparse
+# from dotenv import load_dotenv
+# import os
 import random
 import time
 
+from walabot_osc_publisher import WalabotOSC
+from targets_handler import TargetsHandler
 # from breathing_handler import BreathingHandler
 # from walabot_osc_publisher import WalabotOSC
 from pythonosc import osc_message_builder
@@ -20,43 +21,32 @@ try:  # for Python 2
 except NameError:
     pass
 
-from SensorTargets import SensorTargetsApp
+# from SensorTargets import SensorTargetsApp
 
-def sensorTargets():
-    """ Main app function. Init the main app class, configure the window
-        and start the mainloop.
-    """
-    root = tk.Tk()
-    root.title("Walabot - Sensor Targets")
-    iconFile = tk.PhotoImage(file="walabot-icon.gif")
-    root.tk.call("wm", "iconphoto", root._w, iconFile)  # set app icon
-    root.option_add("*Font", "TkFixedFont")
-    SensorTargetsApp(root).pack(fill=tk.BOTH, expand=tk.YES)
-    root.geometry("+{}+{}".format(os.getenv("APP_X"), os.getenv("APP_Y")))  # set window location
-    root.update()
-    root.minsize(width=root.winfo_reqwidth(), height=root.winfo_reqheight())
-    root.mainloop()
+# def sensorTargets():
+#     """ Main app function. Init the main app class, configure the window
+#         and start the mainloop.
+#     """
+#     root = tk.Tk()
+#     root.title("Walabot - Sensor Targets")
+#     iconFile = tk.PhotoImage(file="walabot-icon.gif")
+#     root.tk.call("wm", "iconphoto", root._w, iconFile)  # set app icon
+#     root.option_add("*Font", "TkFixedFont")
+#     SensorTargetsApp(root).pack(fill=tk.BOTH, expand=tk.YES)
+#     root.geometry("+{}+{}".format(os.getenv("APP_X"), os.getenv("APP_Y")))  # set window location
+#     root.update()
+#     root.minsize(width=root.winfo_reqwidth(), height=root.winfo_reqheight())
+#     root.mainloop()
 
 if __name__ == "__main__":
     load_dotenv()
     print('connecting')
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", default=os.getenv("IP_OUT"),
-        help="The ip of the OSC server")
-    parser.add_argument("--port", type=int, default=os.getenv("PORT_OUT"),
-        help="The port the OSC server is listening on")
 
-    args = parser.parse_args()
+    walabotOSC = WalabotOSC(targetsHandler)
 
-    # breathingHandler = BreathingHandler()
-    # breathingHandler.out_ip = os.getenv("IP_OUT")
-    # breathingHandler.out_port = os.getenv("PORT_OUT")
-    # breathingHandler.in_ip = os.getenv("IP_IN")
-    # breathingHandler.in_port = os.getenv("IN_PORT")
-    # walabotOSC = WalabotOSC(breathingHandler)
-    for x in range(10):
-        r= random.random()
-        print('sending: ')
-        print(r)
-        client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
-        time.sleep(1) 
+    # for x in range(10):
+    #     r= random.random()
+    #     print('sending: ')
+    #     print(r)
+    #     client.send_message("{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME")), r)
+    #     time.sleep(1) 

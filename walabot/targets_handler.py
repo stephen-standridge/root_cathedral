@@ -1,6 +1,9 @@
+from dotenv import load_dotenv
+import os
 import traceback
 from walabot_handler import WalabotHandler
-from walabot_mqtt_publisher import WalabotMQTT
+
+load_dotenv()
 
 arena_params = {
                 'minInCm': 30,          'maxInCm': 200,        'resInCm': 3,
@@ -10,11 +13,12 @@ arena_params = {
 
 
 class TargetsHandler(WalabotHandler):
-    out_ip = ''
-    out_port = ''
-    in_ip = ''
-    in_port = ''
-    device_name = ''
+
+    out_ip = os.getenv("IP_OUT")
+    out_port = os.getenv("PORT_OUT")
+    in_ip = os.getenv("IP_IN")
+    in_port = os.getenv("IN_PORT")
+    device_name = os.getenv("DEVICE_NAME")
 
     def __init__(self):
         super(TargetsHandler, self).__init__()
@@ -69,7 +73,3 @@ class TargetsHandler(WalabotHandler):
         print('Terminate successfully')
         self._wlbt.Clean()
         self.__is_connected = False
-
-
-if __name__ == '__main__':
-    mqtt = WalabotMQTT(TargetsHandler)
