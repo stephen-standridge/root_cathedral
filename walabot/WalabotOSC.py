@@ -43,7 +43,7 @@ if __name__ == "__main__":
     print('connecting')
 
     # walabotOSC = WalabotOSC(targetsHandler)
-
+    client = udp_client.SimpleUDPClient(os.getenv("IP_OUT"), os.getenv("PORT_OUT"))
     for x in range(10):
         r= random.random()
         print('sending: ')
