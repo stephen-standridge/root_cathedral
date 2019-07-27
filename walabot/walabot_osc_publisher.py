@@ -16,6 +16,7 @@ class WalabotOSC:
     class Status(Enum):
         PENDING = 0
         WORKING = 1
+        DISCONNECTED = 2
 
     def __init__(self, walabotHandler):
         print("Initializing")
@@ -43,23 +44,30 @@ class WalabotOSC:
             print('no IN ip or port specified')
 
     def __on_stop(self, address, *args):
+        if self.__status == self.Status.PENDING:
+            return False        
         print("Stopped")
+        self.__osc_client.send_message("/walabot/{}/stopped".format( self.__walabot.device_name), 1)
         self.__status = self.Status.PENDING
         self.__working_thread.join(timeout=2)
 
     def __on_start(self, address, *args):
-        print("Started")
         if self.__status == self.Status.WORKING:
             return False
+        print("Started")
+        self.__osc_client.send_message("/walabot/{}/starting".format( self.__walabot.device_name), 1)
         self.__status = self.Status.WORKING
         self.__working_thread = Thread(target=self.__data_loop)
         self.__working_thread.start()    
 
     def __on_disconnect(self, address, *args):
+        if self.__status is self.Status.DISCONNECTED:
+            return False
+        print("Disconnected")
+        self.__osc_client.send_message("/walabot/{}/disconnected".format( self.__walabot.device_name), 1)
         if self.__status is self.Status.WORKING:
-            self.__status = self.Status.PENDING
             self.__working_thread.join(timeout=2)
-            self.__osc_server.disconnect()
+        self.__status = self.Status.DISCONNECTED
 
     def __data_loop(self):
         is_connected = self.__walabot.start()
@@ -70,7 +78,7 @@ class WalabotOSC:
             self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.device_name), -1)
             self.__status = self.Status.PENDING       
         else:
-            self.__osc_client.send_message("/walabot/{}/start".format( self.__walabot.device_name), 0)
+            self.__osc_client.send_message("/walabot/{}/started".format( self.__walabot.device_name), 1)
         error_counter = 0
         while self.__status is self.Status.WORKING:
             data = dict()
