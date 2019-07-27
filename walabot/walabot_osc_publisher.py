@@ -1,6 +1,7 @@
 from pythonosc import dispatcher
 from pythonosc import osc_server
 from pythonosc import udp_client
+import os
 
 from enum import Enum
 from time import sleep
@@ -16,7 +17,7 @@ class WalabotOSC:
     class Status(Enum):
         PENDING = 0
         WORKING = 1
-        DISCONNECTED = 2
+        REBOOTING = 2
 
     def __init__(self, walabotHandler):
         print("Initializing")
@@ -29,19 +30,21 @@ class WalabotOSC:
             self.__osc_client = udp_client.SimpleUDPClient(self.__walabot.out_ip, int(self.__walabot.out_port))
         else:
             print('no OUT ip or port specified')
-
+            return
         if self.__walabot.in_ip is not None and self.__walabot.in_port is not None:
             print("Starting server at {}:{}".format(self.__walabot.in_ip, self.__walabot.in_port))
             self.__dispatcher = dispatcher.Dispatcher()
             self.__dispatcher.map("/stop", self.__on_stop)
             self.__dispatcher.map("/start", self.__on_start)
-            self.__dispatcher.map("/disconnect", self.__on_disconnect)
+            self.__dispatcher.map("/reboot", self.__on_disconnect)
 
             self.__osc_server = osc_server.ThreadingOSCUDPServer(
             (self.__walabot.in_ip, int(self.__walabot.in_port)), self.__dispatcher)
             self.__osc_server.serve_forever()
         else: 
             print('no IN ip or port specified')
+
+        self.__osc_client.send_message("/walabot/{}/initialized".format( self.__walabot.device_name), 1)
 
     def __on_stop(self, address, *args):
         if self.__status == self.Status.PENDING:
@@ -61,13 +64,15 @@ class WalabotOSC:
         self.__working_thread.start()    
 
     def __on_disconnect(self, address, *args):
-        if self.__status is self.Status.DISCONNECTED:
+        if self.__status is self.Status.REBOOTING:
             return False
-        print("Disconnected")
-        self.__osc_client.send_message("/walabot/{}/disconnected".format( self.__walabot.device_name), 1)
+        print("Rebooting")
+        self.__osc_client.send_message("/walabot/{}/rebooting".format( self.__walabot.device_name), 1)
         if self.__status is self.Status.WORKING:
             self.__working_thread.join(timeout=2)
-        self.__status = self.Status.DISCONNECTED
+        self.__status = self.Status.REBOOTING
+        self.__osc_server.shutdown()
+        os.system('sudo reboot -r now')
 
     def __data_loop(self):
         is_connected = self.__walabot.start()

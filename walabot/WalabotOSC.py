@@ -24,16 +24,4 @@ except NameError:
 
 
 if __name__ == "__main__":
-    # load_dotenv()
-    # print('connecting')
-
     walabotOSC = WalabotOSC(TargetsHandler)
-    # print("Sending to {}:{}".format(os.getenv("IP_OUT"), int(os.getenv("PORT_OUT")) ))
-    # client = udp_client.SimpleUDPClient(os.getenv("IP_OUT"), int(os.getenv("PORT_OUT")))
-    # for x in range(10):
-    #     r= random.random()
-    #     channel = "/{}/{}".format(os.getenv("CHANNEL_NAME"), os.getenv("DEVICE_NAME"))
-    #     print('sending on channel {}'.format(channel))
-    #     print(r)
-    #     client.send_message(channel, r)
-    #     time.sleep(1) 
