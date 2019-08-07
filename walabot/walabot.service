@@ -3,7 +3,7 @@ Description=Walabot Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 -u WalabotOSC.py
+ExecStart=/usr/local/bin/python3 -u WalabotOSC.py
 WorkingDirectory=/home/pi/root_cathedral/walabot
 StandardOutput=inherit
 StandardError=inherit
