@@ -13,10 +13,7 @@ from walabot_osc_publisher import WalabotOSC
 
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
-try:  # for Python 2
-    import Tkinter as tk
-except ImportError:  # for Python 3
-    import tkinter as tk
+
 try:  # for Python 2
     range = xrange
 except NameError:
