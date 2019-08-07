@@ -37,7 +37,6 @@ from: https://github.com/Walabot-Projects/Walabot-HelloWalabot
 pip install python-osc python-dotenv --user
 ```
 
-
 #Move the .service file
 ```
 sudo cp root_cathedral/walabot/walabot.service /etc/systemd/system
