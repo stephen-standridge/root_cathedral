@@ -27,9 +27,9 @@ def get_ip_address(ifname):
 
 class TargetsHandler(WalabotHandler):
 
-    out_ip = get_ip_address('eth0')
+    out_ip = os.getenv("IP_OUT")
     out_port = os.getenv("PORT_OUT")
-    in_ip = os.getenv("IP_IN")
+    in_ip = get_ip_address('eth0')
     in_port = os.getenv("PORT_IN")
     device_name = os.getenv("DEVICE_NAME")
 
