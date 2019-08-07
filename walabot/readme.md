@@ -11,12 +11,14 @@ make
 sudo make install
 sudo pip3 install --upgrade pip
 ```
-from: http://www.knight-of-pi.org/installing-python3-6-on-a-raspberry-pi/
+[learn more about installing python on raspberry pi](http://www.knight-of-pi.org/installing-python3-6-on-a-raspberry-pi/)
 
 ```
+
 sudo apt-get install python3.6-tk
 ```
-from: https://askubuntu.com/questions/815874/importerror-no-named-tkinter-please-install-the-python3-tk-package
+
+//[learn more about installing python3.6-tk](https://askubuntu.com/questions/815874/importerror-no-named-tkinter-please-install-the-python3-tk-package)
 
 ##Install Walabot SDK
 ```
@@ -32,8 +34,9 @@ from: https://github.com/Walabot-Projects/Walabot-HelloWalabot
 
 ##Install Python Dependencies
 ```
-pip install python-osc python-dotenv
+pip install python-osc python-dotenv --user
 ```
+
 
 #Move the .service file
 ```
