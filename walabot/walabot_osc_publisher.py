@@ -56,7 +56,7 @@ class WalabotOSC:
 
 
     def __on_ping(self, address, *args):
-        self.__osc_client.send_message("/walabot/{}/ping".format( self.__walabot.in_ip), address)
+        self.__osc_client.send_message("/walabot/{}/ping".format( self.__walabot.in_ip), args[0])
 
     def __on_stop(self, address, *args):
         if self.__status == self.Status.PENDING:
