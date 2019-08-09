@@ -56,7 +56,7 @@ class WalabotOSC:
     def __on_stop(self, address, *args):
         if self.__status == self.Status.PENDING:
             return False
-        if args[0] === 0:
+        if args[0] == 0:
             return False
         print("Stopped")
         self.__osc_client.send_message("/walabot/{}_{}/stopped".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
@@ -66,7 +66,7 @@ class WalabotOSC:
     def __on_start(self, address, *args):
         if self.__status == self.Status.WORKING:
             return False
-        if args[0] === 0:
+        if args[0] == 0:
             return False            
         print("Started")
         self.__osc_client.send_message("/walabot/{}_{}/starting".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
@@ -77,7 +77,7 @@ class WalabotOSC:
     def __on_disconnect(self, address, *args):
         if self.__status is self.Status.REBOOTING:
             return False
-        if args[0] === 0:
+        if args[0] == 0:
             return False            
         print("Rebooting")
         self.__osc_client.send_message("/walabot/{}_{}/rebooting".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
