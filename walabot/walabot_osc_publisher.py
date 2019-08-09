@@ -35,6 +35,7 @@ class WalabotOSC:
             self.__osc_client.send_message("/walabot/{}/stopped".format( self.__walabot.in_ip), 0)
             self.__osc_client.send_message("/walabot/{}/rebooting".format( self.__walabot.in_ip), 0)
             self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}/ping".format( self.__walabot.in_ip), 0)
         else:
             print('no OUT ip or port specified')
             return
@@ -91,7 +92,8 @@ class WalabotOSC:
         self.__osc_client.send_message("/walabot/{}/started".format(self.__walabot.in_ip), -1)
         self.__osc_client.send_message("/walabot/{}/stopped".format(self.__walabot.in_ip), -1)
         self.__osc_client.send_message("/walabot/{}/rebooting".format(self.__walabot.in_ip), -1)
-        self.__osc_client.send_message("/walabot/{}/error".format(self.__walabot.in_ip), -1)        
+        self.__osc_client.send_message("/walabot/{}/error".format(self.__walabot.in_ip), -1)    
+        self.__osc_client.send_message("/walabot/{}/ping".format( self.__walabot.in_ip), -1)
         if self.__status is self.Status.WORKING:
             self.__working_thread.join(timeout=2)
         self.__status = self.Status.REBOOTING
