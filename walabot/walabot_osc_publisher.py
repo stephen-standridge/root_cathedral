@@ -81,6 +81,13 @@ class WalabotOSC:
             return False            
         print("Rebooting")
         self.__osc_client.send_message("/walabot/{}_{}/rebooting".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
+        self.__osc_client.send_message("/walabot/{}_{}/client_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}_{}/server_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}_{}/starting".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}_{}/started".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}_{}/stopped".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}_{}/rebooting".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}_{}/error".format( self.__walabot.device_name, self.__walabot.in_ip), -1)        
         if self.__status is self.Status.WORKING:
             self.__working_thread.join(timeout=2)
         self.__status = self.Status.REBOOTING
