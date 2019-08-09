@@ -29,6 +29,12 @@ class WalabotOSC:
             print("Starting client at {}:{}".format(self.__walabot.out_ip, self.__walabot.out_port))
             self.__osc_client = udp_client.SimpleUDPClient(self.__walabot.out_ip, int(self.__walabot.out_port))
             self.__osc_client.send_message("/walabot/{}_{}/client_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
+            self.__osc_client.send_message("/walabot/{}_{}/server_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}_{}/starting".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}_{}/started".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}_{}/stopped".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}_{}/rebooting".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}_{}/error".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
         else:
             print('no OUT ip or port specified')
             return
