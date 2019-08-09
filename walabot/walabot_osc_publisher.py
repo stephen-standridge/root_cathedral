@@ -43,6 +43,7 @@ class WalabotOSC:
             self.__dispatcher = dispatcher.Dispatcher()
             self.__dispatcher.map("/stop", self.__on_stop)
             self.__dispatcher.map("/start", self.__on_start)
+            self.__dispatcher.map("/ping", self.__on_ping)            
             self.__dispatcher.map("/reboot", self.__on_disconnect)
 
             self.__osc_server = osc_server.ThreadingOSCUDPServer(
@@ -52,6 +53,9 @@ class WalabotOSC:
         else: 
             print('no IN ip or port specified')
 
+
+    def __on_ping(self, address, *args):
+        self.__osc_client.send_message("/walabot/{}/ping".format( self.__walabot.in_ip), address)
 
     def __on_stop(self, address, *args):
         if self.__status == self.Status.PENDING:
