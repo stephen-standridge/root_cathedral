@@ -26,14 +26,14 @@ class WalabotOSC:
         self.__working_thread = 0
         
         if self.__walabot.out_ip is not None and self.__walabot.out_port is not None:
-            print("Starting client at {}:{}".format(self.__walabot.out_ip, self.__walabot.out_port))
+            print("Sending messages to {} on port {}".format(self.__walabot.out_ip, self.__walabot.out_port))
             self.__osc_client = udp_client.SimpleUDPClient(self.__walabot.out_ip, int(self.__walabot.out_port))
             self.__osc_client.send_message("/walabot/{}_{}/client_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
         else:
             print('no OUT ip or port specified')
             return
         if self.__walabot.in_ip is not None and self.__walabot.in_port is not None:
-            print("Starting server at {}:{}".format(self.__walabot.in_ip, self.__walabot.in_port))
+            print("Receiving messages on ip {} on port {}".format(self.__walabot.in_ip, self.__walabot.in_port))
             self.__dispatcher = dispatcher.Dispatcher()
             self.__dispatcher.map("/stop", self.__on_stop)
             self.__dispatcher.map("/start", self.__on_start)
