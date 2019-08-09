@@ -43,6 +43,7 @@ class WalabotOSC:
             (self.__walabot.in_ip, int(self.__walabot.in_port)), self.__dispatcher)
             self.__osc_client.send_message("/walabot/{}_{}/server_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
             self.__osc_server.serve_forever()
+            self.__on_start()
         else: 
             print('no IN ip or port specified')
 
