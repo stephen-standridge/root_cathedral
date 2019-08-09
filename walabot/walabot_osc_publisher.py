@@ -28,13 +28,13 @@ class WalabotOSC:
         if self.__walabot.out_ip is not None and self.__walabot.out_port is not None:
             print("Sending messages to {} on port {}".format(self.__walabot.out_ip, self.__walabot.out_port))
             self.__osc_client = udp_client.SimpleUDPClient(self.__walabot.out_ip, int(self.__walabot.out_port))
-            self.__osc_client.send_message("/walabot/{}_{}/client_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
-            self.__osc_client.send_message("/walabot/{}_{}/server_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
-            self.__osc_client.send_message("/walabot/{}_{}/starting".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
-            self.__osc_client.send_message("/walabot/{}_{}/started".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
-            self.__osc_client.send_message("/walabot/{}_{}/stopped".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
-            self.__osc_client.send_message("/walabot/{}_{}/rebooting".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
-            self.__osc_client.send_message("/walabot/{}_{}/error".format( self.__walabot.device_name, self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}/client_initialized".format( self.__walabot.in_ip), 1)
+            self.__osc_client.send_message("/walabot/{}/server_initialized".format( self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}/starting".format( self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}/started".format( self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}/stopped".format( self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}/rebooting".format( self.__walabot.in_ip), 0)
+            self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.in_ip), 0)
         else:
             print('no OUT ip or port specified')
             return
@@ -47,7 +47,7 @@ class WalabotOSC:
 
             self.__osc_server = osc_server.ThreadingOSCUDPServer(
             (self.__walabot.in_ip, int(self.__walabot.in_port)), self.__dispatcher)
-            self.__osc_client.send_message("/walabot/{}_{}/server_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
+            self.__osc_client.send_message("/walabot/{}/server_initialized".format( self.__walabot.in_ip), 1)
             self.__osc_server.serve_forever()
         else: 
             print('no IN ip or port specified')
@@ -59,7 +59,7 @@ class WalabotOSC:
         if args[0] == 0:
             return False
         print("Stopped")
-        self.__osc_client.send_message("/walabot/{}_{}/stopped".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
+        self.__osc_client.send_message("/walabot/{}/stopped".format( self.__walabot.in_ip), 1)
         self.__status = self.Status.PENDING
         self.__working_thread.join(timeout=2)
 
@@ -69,7 +69,7 @@ class WalabotOSC:
         if args[0] == 0:
             return False            
         print("Started")
-        self.__osc_client.send_message("/walabot/{}_{}/starting".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
+        self.__osc_client.send_message("/walabot/{}/starting".format( self.__walabot.in_ip), 1)
         self.__status = self.Status.WORKING
         self.__working_thread = Thread(target=self.__data_loop)
         self.__working_thread.start()    
@@ -80,14 +80,14 @@ class WalabotOSC:
         if args[0] == 0:
             return False            
         print("Rebooting")
-        self.__osc_client.send_message("/walabot/{}_{}/rebooting".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
-        self.__osc_client.send_message("/walabot/{}_{}/client_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
-        self.__osc_client.send_message("/walabot/{}_{}/server_initialized".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
-        self.__osc_client.send_message("/walabot/{}_{}/starting".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
-        self.__osc_client.send_message("/walabot/{}_{}/started".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
-        self.__osc_client.send_message("/walabot/{}_{}/stopped".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
-        self.__osc_client.send_message("/walabot/{}_{}/rebooting".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
-        self.__osc_client.send_message("/walabot/{}_{}/error".format( self.__walabot.device_name, self.__walabot.in_ip), -1)        
+        self.__osc_client.send_message("/walabot/{}/rebooting".format(self.__walabot.in_ip), 1)
+        self.__osc_client.send_message("/walabot/{}/client_initialized".format(self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}/server_initialized".format(self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}/starting".format(self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}/started".format(self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}/stopped".format(self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}/rebooting".format(self.__walabot.in_ip), -1)
+        self.__osc_client.send_message("/walabot/{}/error".format(self.__walabot.in_ip), -1)        
         if self.__status is self.Status.WORKING:
             self.__working_thread.join(timeout=2)
         self.__status = self.Status.REBOOTING
@@ -97,25 +97,25 @@ class WalabotOSC:
     def __data_loop(self):
         is_connected = self.__walabot.start()
         if self.__walabot.device_name is None:
-            self.__osc_client.send_message("/walabot/error", -2)
+            self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.in_ip), -1)
             self.__status = self.Status.PENDING             
         elif not is_connected:
-            self.__osc_client.send_message("/walabot/{}_{}/error".format( self.__walabot.device_name, self.__walabot.in_ip), -1)
+            self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.in_ip), -1)
             self.__status = self.Status.PENDING       
         else:
-            self.__osc_client.send_message("/walabot/{}_{}/started".format( self.__walabot.device_name, self.__walabot.in_ip), 1)
+            self.__osc_client.send_message("/walabot/{}/started".format( self.__walabot.in_ip), 1)
         error_counter = 0
         while self.__status is self.Status.WORKING:
             data = dict()
             rc = self.__walabot.get_data(data)
             if rc:
                 for key, value in data.items():
-                    self.__osc_client.send_message("/walabot/{}_{}/{}".format( self.__walabot.device_name, self.__walabot.in_ip, key), value)
+                    self.__osc_client.send_message("/walabot/{}/{}".format( self.__walabot.in_ip, key), value)
                 error_counter = 0
             else:
                 error_counter += 1
                 if error_counter >= 100:
-                    self.__osc_client.send_message("/walabot/{}_{}/error".format( self.__walabot.device_name, self.__walabot.in_ip), error_counter)
+                    self.__osc_client.send_message("/walabot/{}/error".format( self.__walabot.in_ip), error_counter)
                     self.__status = self.Status.PENDING
             sleep(0.03)
         self.__walabot.stop()
