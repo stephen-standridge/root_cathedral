@@ -12,24 +12,17 @@
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
+byte mac[] = {
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+};
+
+// An EthernetUDP instance to let us send and receive packets over UDP
+EthernetUDP Udp;
+
 const IPAddress outIp(10, 10, 1, 1);
 const IPAddress inIp(10, 10, 1, 2);
 const unsigned int outPort = 8888;
 const unsigned int inPort = 9999;        // local port to listen for OSC packets (actually not used for sending)
-const String channelIdentifier = "/spatial/10_10_1_2";
-
-int delayval = 10; // delay for half a second
-
-
-byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
-};
-// buffers for receiving and sending data
-char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
-char ReplyBuffer[] = "acknowledged";        // a string to send back
-
-// An EthernetUDP instance to let us send and receive packets over UDP
-EthernetUDP Udp;
 
 const char * initializedChannel = "/spatial/10_10_1_2/initialized";
 const char * rebootingChannel = "/spatial/10_10_1_2/rebooting";
@@ -47,6 +40,7 @@ const char * qwChannel = "/spatial/10_10_1_2/qw";
 
 OSCMessage error_bno_msg(bnoErrorChannel);
 OSCMessage ping_msg(pingChannel);
+
 
 void displaySensorDetails(void)
 {
@@ -192,7 +186,6 @@ void loop() {
    {
      while(size--)
        bundleIN.fill(Udp.read());
-      Serial.println("receiving");
       if(!bundleIN.hasError()) {
         bundleIN.route("/reboot", reboot);
         bundleIN.route("/ping", pong);
