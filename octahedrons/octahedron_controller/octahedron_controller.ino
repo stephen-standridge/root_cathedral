@@ -12,17 +12,17 @@
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
+const IPAddress outIp(10, 10, 1, 1);
+const IPAddress inIp(10, 10, 1, 2);
+const unsigned int outPort = 8888;
+const unsigned int inPort = 9999;        // local port to listen for OSC packets (actually not used for sending)
+
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
-
-const IPAddress outIp(10, 10, 1, 1);
-const IPAddress inIp(10, 10, 1, 2);
-const unsigned int outPort = 8888;
-const unsigned int inPort = 9999;        // local port to listen for OSC packets (actually not used for sending)
 
 const char * initializedChannel = "/spatial/10_10_1_2/initialized";
 const char * rebootingChannel = "/spatial/10_10_1_2/rebooting";
@@ -40,7 +40,6 @@ const char * qwChannel = "/spatial/10_10_1_2/qw";
 
 OSCMessage error_bno_msg(bnoErrorChannel);
 OSCMessage ping_msg(pingChannel);
-
 
 void displaySensorDetails(void)
 {
@@ -117,8 +116,10 @@ void setup() {
   Ethernet.begin(mac, inIp);
 
   Serial.println();
-  Serial.println("Ethernet connected");
-  Serial.println("Starting UDP");
+  Serial.print("Ethernet connected ");
+  Serial.println(inIp);
+  Serial.print("Starting UDP ");
+  Serial.println(inPort);
   Udp.begin(inPort);
 
   /* Initialise the sensor */
