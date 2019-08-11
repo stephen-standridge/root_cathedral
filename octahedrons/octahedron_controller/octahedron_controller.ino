@@ -106,6 +106,8 @@ void onClientInitialized() {
   delay(1000); 
 }
 
+bool bnoWorking = false;
+
 void setup() {
   Serial.begin(115200);
   while (!Serial) {
@@ -123,7 +125,8 @@ void setup() {
   Udp.begin(inPort);
 
   /* Initialise the sensor */
-  if(!bno.begin())
+  bnoWorking = bno.begin();
+  if(!bnoWorking)
   {
     error_bno_msg.add(1);
     Udp.beginPacket(outIp, outPort);
@@ -133,17 +136,19 @@ void setup() {
     delay(200);  
     /* There was a problem detecting the BNO055 ... check your connections */
     Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-    while(1);
   } else {
     Serial.println("BNO055 detected"); Serial.println("");    
   }
 
   delay(1000);
 
-  /* Display some basic information on this sensor */
-  displaySensorDetails();
-
-  bno.setExtCrystalUse(true); 
+  if (bnoWorking) {
+    /* Display some basic information on this sensor */
+    displaySensorDetails();
+  
+    bno.setExtCrystalUse(true);   
+  }
+  
   onClientInitialized();  
 }
 
@@ -188,11 +193,14 @@ void loop() {
      while(size--)
        bundleIN.fill(Udp.read());
       if(!bundleIN.hasError()) {
-        bundleIN.route("/reboot", reboot);
+        bundleIN.route("/spatial/10_10_1_2/reboot", reboot);
+        bundleIN.route("/spatial/10_10_1_2/ping", pong);
+        bundleIN.route("/reboot", reboot);        
         bundleIN.route("/ping", pong);
       }
    }  
 
-  publishOrientationAcceleration();    
-  
+  if (bnoWorking) {
+    publishOrientationAcceleration();        
+  }
 }
