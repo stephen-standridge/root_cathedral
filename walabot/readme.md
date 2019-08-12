@@ -18,7 +18,7 @@ sudo pip3 install --upgrade pip
 sudo apt-get install python3.6-tk
 ```
 
-//[learn more about installing python3.6-tk](https://askubuntu.com/questions/815874/importerror-no-named-tkinter-please-install-the-python3-tk-package)
+[learn more about installing python3.6-tk](https://askubuntu.com/questions/815874/importerror-no-named-tkinter-please-install-the-python3-tk-package)
 
 ##Install Walabot SDK
 ```
