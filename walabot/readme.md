@@ -15,6 +15,7 @@ sudo pip3 install --upgrade pip
 
 ##Install Walabot SDK
 ```
+cd 
 sudo dpkg -i root_cathedral/walabot/WalabotSDK_2018.09.02_v1.2.2_RPi.deb
 ```
 from: https://api.walabot.com/_install.html
