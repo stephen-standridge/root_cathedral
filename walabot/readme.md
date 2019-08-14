@@ -13,15 +13,9 @@ sudo pip3 install --upgrade pip
 ```
 [learn more about installing python on raspberry pi](http://www.knight-of-pi.org/installing-python3-6-on-a-raspberry-pi/)
 
-```
-
-sudo apt-get install python3.6-tk
-```
-
-//[learn more about installing python3.6-tk](https://askubuntu.com/questions/815874/importerror-no-named-tkinter-please-install-the-python3-tk-package)
-
 ##Install Walabot SDK
 ```
+cd 
 sudo dpkg -i root_cathedral/walabot/WalabotSDK_2018.09.02_v1.2.2_RPi.deb
 ```
 from: https://api.walabot.com/_install.html
