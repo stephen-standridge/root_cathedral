@@ -50,6 +50,7 @@ class WalabotOSC:
             self.__osc_server = osc_server.ThreadingOSCUDPServer(
             (self.__walabot.in_ip, int(self.__walabot.in_port)), self.__dispatcher)
             self.__osc_client.send_message("/walabot/{}/server_initialized".format( self.__walabot.in_ip), 1)
+            self.__on_start(self.__walabot.in_ip, [1])
             self.__osc_server.serve_forever()
         else: 
             print('no IN ip or port specified')
