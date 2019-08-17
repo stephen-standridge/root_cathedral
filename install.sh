@@ -1,5 +1,16 @@
 #!/bin/bash
 
+echo "Welcome to the"
+cat <<'EOF'
+ ____             _      ____      _   _              _           _ 
+|  _ \ ___   ___ | |_   / ___|__ _| |_| |__   ___  __| |_ __ __ _| |
+| |_) / _ \ / _ \| __| | |   / _` | __| '_ \ / _ \/ _` | '__/ _` | |
+|  _ < (_) | (_) | |_  | |__| (_| | |_| | | |  __/ (_| | | | (_| | |
+|_| \_\___/ \___/ \__|  \____\__,_|\__|_| |_|\___|\__,_|_|  \__,_|_|                                                                 
+EOF
+echo "...installer"
+echo ""
+
 set -xe
 
 ensure_workdir() {
@@ -48,9 +59,9 @@ install_python() {
     sudo pip3 install --upgrade pip
 }
 
-ensure_workdir
-clone_repo
-install_walabot
-install_osc_deps
-install_python
+#ensure_workdir
+#clone_repo
+#install_walabot
+#install_osc_deps
+#install_python
 
