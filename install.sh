@@ -4,6 +4,7 @@ set -xe
 
 ensure_workdir() {
     tmp_dir="/opt/install-`date +%s`/"
+    mkdir -p $tmp_dir
     cd $tmp_dir
 }
 
