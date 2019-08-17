@@ -61,7 +61,7 @@ install_python() {
 
 ensure_workdir
 clone_repo
-install_walabot
-install_osc_deps
 install_python
+install_osc_deps
+install_walabot
 
