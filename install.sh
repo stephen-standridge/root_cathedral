@@ -3,7 +3,7 @@
 set -xe
 
 ensure_workdir() {
-    tmp_dir=$(mktemp -d -t python-install-XXXXXXXXXX)
+    tmp_dir="/opt/install-`date +%s`/"
     cd $tmp_dir
 }
 
