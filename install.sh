@@ -59,9 +59,9 @@ install_python() {
     sudo pip3 install --upgrade pip
 }
 
-#ensure_workdir
-#clone_repo
-#install_walabot
-#install_osc_deps
-#install_python
+ensure_workdir
+clone_repo
+install_walabot
+install_osc_deps
+install_python
 
