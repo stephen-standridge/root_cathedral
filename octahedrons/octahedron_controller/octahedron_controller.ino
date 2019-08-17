@@ -2,15 +2,16 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+#include <Adafruit_DRV2605.h>
 
 #include <OSCBundle.h>
 #include <OSCMessage.h>
 #include <Ethernet2.h>
 #include <EthernetUdp2.h>
 
-
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
+Adafruit_DRV2605 drv;
 
 const IPAddress outIp(10, 10, 1, 1);
 const IPAddress inIp(10, 10, 1, 2);
@@ -26,21 +27,33 @@ EthernetUDP Udp;
 
 const char * initializedChannel = "/spatial/10_10_1_2/initialized";
 const char * rebootingChannel = "/spatial/10_10_1_2/rebooting";
-const char * pingChannel = "/spatial/10_10_1_2/ping";
 const char * bnoErrorChannel = "/spatial/10_10_1_2/error_bno";
+const char * drvErrorChannel = "/spatial/10_10_1_2/error_drv";
 
 const char * axChannel = "/spatial/10_10_1_2/ax";
 const char * ayChannel = "/spatial/10_10_1_2/ay";
 const char * azChannel = "/spatial/10_10_1_2/az";
-
+//
 const char * qxChannel = "/spatial/10_10_1_2/qx";
 const char * qyChannel = "/spatial/10_10_1_2/qy";
 const char * qzChannel = "/spatial/10_10_1_2/qz";
 const char * qwChannel = "/spatial/10_10_1_2/qw";
 
 OSCMessage error_bno_msg(bnoErrorChannel);
-OSCMessage ping_msg(pingChannel);
+OSCMessage error_drv_msg(drvErrorChannel);
+OSCMessage ax_msg(axChannel);
+OSCMessage ay_msg(ayChannel);
+OSCMessage az_msg(azChannel);
 
+OSCMessage qx_msg(qxChannel);
+OSCMessage qy_msg(qyChannel);
+OSCMessage qz_msg(qzChannel);
+OSCMessage qw_msg(qwChannel);
+
+bool bnoWorking = false;
+bool drvWorking = false;
+int prevMessage;
+int currentVibration= 999;
 void displaySensorDetails(void)
 {
   sensor_t sensor;
@@ -58,26 +71,54 @@ void displaySensorDetails(void)
 }
 
 void publishOrientationAcceleration() {
-  OSCBundle bndl;
   /* ACCELERATION */
-  imu::Vector<3> acceleration = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-  bndl.add(axChannel).add(float(acceleration.x()));
-  bndl.add(ayChannel).add(float(acceleration.y()));
-  bndl.add(azChannel).add(float(acceleration.z()));
+    imu::Vector<3> acceleration = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
+    ax_msg.add(float(acceleration.x()));
+    ay_msg.add(float(acceleration.y()));
+    az_msg.add(float(acceleration.z()));
+    
+//  /* QUATERNION */
+    imu::Quaternion quat = bno.getQuat();  
+    qx_msg.add(float(quat.x()));
+    qy_msg.add(float(quat.y()));
+    qz_msg.add(float(quat.z()));
+    qw_msg.add(float(quat.w()));
+    
+    Udp.beginPacket(outIp, outPort);
+    ax_msg.send(Udp); // send the bytes to the SLIP stream
+    Udp.endPacket(); // mark the end of the OSC Packet
+    ax_msg.empty(); // free space occupied by message
+    
+    Udp.beginPacket(outIp, outPort);
+    ay_msg.send(Udp); // send the bytes to the SLIP stream
+    Udp.endPacket(); // mark the end of the OSC Packet
+    ay_msg.empty(); // free space occupied by message
+    
+    Udp.beginPacket(outIp, outPort);
+    az_msg.send(Udp); // send the bytes to the SLIP stream
+    Udp.endPacket(); // mark the end of the OSC Packet
+    az_msg.empty(); // free space occupied by message  
 
-  /* QUATERNION */
-  imu::Quaternion quat = bno.getQuat();  
+    Udp.beginPacket(outIp, outPort);
+    qx_msg.send(Udp); // send the bytes to the SLIP stream
+    Udp.endPacket(); // mark the end of the OSC Packet
+    qx_msg.empty(); // free space occupied by message  
 
-  bndl.add(qxChannel).add(float(quat.x()));
-  bndl.add(qyChannel).add(float(quat.y()));
-  bndl.add(qzChannel).add(float(quat.z()));
-  bndl.add(qwChannel).add(float(quat.w()));
-  
-  Udp.beginPacket(outIp, outPort);
-  bndl.send(Udp);
-  Udp.endPacket();
-  bndl.empty();
-  
+    Udp.beginPacket(outIp, outPort);
+    qy_msg.send(Udp); // send the bytes to the SLIP stream
+    Udp.endPacket(); // mark the end of the OSC Packet
+    qy_msg.empty(); // free space occupied by message  
+
+    Udp.beginPacket(outIp, outPort);
+    qz_msg.send(Udp); // send the bytes to the SLIP stream
+    Udp.endPacket(); // mark the end of the OSC Packet
+    qz_msg.empty(); // free space occupied by message       
+
+    Udp.beginPacket(outIp, outPort);
+    qw_msg.send(Udp); // send the bytes to the SLIP stream
+    Udp.endPacket(); // mark the end of the OSC Packet
+    qw_msg.empty(); // free space occupied by message                    
+
   delay(BNO055_SAMPLERATE_DELAY_MS);
 }
 
@@ -97,7 +138,6 @@ void onClientInitialized() {
 
   bndl.add(initializedChannel).add(1);
   bndl.add(rebootingChannel).add(0);
-  bndl.add(pingChannel).add(0);
   
   Udp.beginPacket(outIp, outPort);
   bndl.send(Udp);
@@ -106,7 +146,6 @@ void onClientInitialized() {
   delay(1000); 
 }
 
-bool bnoWorking = false;
 
 void setup() {
   Serial.begin(115200);
@@ -135,38 +174,24 @@ void setup() {
     error_bno_msg.empty();
     delay(200);  
     /* There was a problem detecting the BNO055 ... check your connections */
-    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+    Serial.println("BNO055 not found");
   } else {
-    Serial.println("BNO055 detected"); Serial.println("");    
-  }
-
-  delay(1000);
-
-  if (bnoWorking) {
+    Serial.println("BNO055 detected"); 
+    Serial.println("");  
     /* Display some basic information on this sensor */
     displaySensorDetails();
   
-    bno.setExtCrystalUse(true);   
-  }
-  
+    bno.setExtCrystalUse(true);         
+  } 
+
+
+  drv.begin();
+  Serial.println("DRV detected");    
+  Serial.println("");  
+  drv.selectLibrary(1);
+  drv.setMode(DRV2605_MODE_INTTRIG);     
+
   onClientInitialized();  
-}
-
-int prevMessage;
-
-void pong(OSCMessage &msg, int addrOffset) {
-  int newMessage = int(msg.getFloat(0));
-  if (newMessage == prevMessage) return;
-  
-  Serial.print("received message ");
-  Serial.println(newMessage);
-  ping_msg.add(newMessage);
-  Udp.beginPacket(outIp, outPort);
-  ping_msg.send(Udp);
-  Udp.endPacket();
-  ping_msg.empty();
-  prevMessage = newMessage;
-  delay(200); 
 }
 
 void reboot(OSCMessage &msg, int addrOffset) {
@@ -174,7 +199,6 @@ void reboot(OSCMessage &msg, int addrOffset) {
   OSCBundle bndl;
   bndl.add(rebootingChannel).add(1);
   bndl.add(initializedChannel).add(0);
-  bndl.add(pingChannel).add(0);
   bndl.add(bnoErrorChannel).add(0);
   
   Udp.beginPacket(outIp, outPort);
@@ -184,20 +208,33 @@ void reboot(OSCMessage &msg, int addrOffset) {
   ESP.restart();
 }
 
+void vibrate(OSCMessage &msg, int addrOffset) {
+  int newVibration = int(msg.getFloat(0));  
+    Serial.println(newVibration);
+
+  if (currentVibration == newVibration) return;
+
+  drv.setWaveform(0, newVibration);
+  currentVibration = newVibration;
+}
+
 void loop() {
+    drv.go();
+
    OSCBundle bundleIN;
-   int size;
- 
-   if( (size = Udp.parsePacket())>0)
+   int size = Udp.parsePacket();
+   if( size>0)
    {
      while(size--)
        bundleIN.fill(Udp.read());
       if(!bundleIN.hasError()) {
         bundleIN.route("/spatial/10_10_1_2/reboot", reboot);
-        bundleIN.route("/spatial/10_10_1_2/ping", pong);
         bundleIN.route("/reboot", reboot);        
-        bundleIN.route("/ping", pong);
+        bundleIN.route("/spatial/10_10_1_2/vibrate", vibrate);                        
+        bundleIN.route("/vibrate", vibrate);     
       }
+      
+      Udp.flush();
    }  
 
   if (bnoWorking) {
