@@ -4,7 +4,8 @@ set -xe
 
 ensure_workdir() {
     tmp_dir="/opt/install-`date +%s`/"
-    mkdir -p $tmp_dir
+    sudo mkdir -p $tmp_dir
+    sudo chown -R `whoami` $tmp_dir
     cd $tmp_dir
 }
 
