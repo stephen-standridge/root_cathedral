@@ -9,7 +9,7 @@
 #include <Ethernet2.h>
 #include <EthernetUdp2.h>
 
-#define BNO055_SAMPLERATE_DELAY_MS (100)
+#define BNO055_SAMPLERATE_DELAY_MS (200)
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 Adafruit_DRV2605 drv;
 
@@ -39,16 +39,6 @@ const char * qyChannel = "/spatial/10_10_1_2/qy";
 const char * qzChannel = "/spatial/10_10_1_2/qz";
 const char * qwChannel = "/spatial/10_10_1_2/qw";
 
-OSCMessage error_bno_msg(bnoErrorChannel);
-OSCMessage error_drv_msg(drvErrorChannel);
-OSCMessage ax_msg(axChannel);
-OSCMessage ay_msg(ayChannel);
-OSCMessage az_msg(azChannel);
-
-OSCMessage qx_msg(qxChannel);
-OSCMessage qy_msg(qyChannel);
-OSCMessage qz_msg(qzChannel);
-OSCMessage qw_msg(qwChannel);
 
 bool bnoWorking = false;
 bool drvWorking = false;
@@ -70,19 +60,50 @@ void displaySensorDetails(void)
   delay(500);
 }
 
+OSCMessage ax_msg(axChannel);
+OSCMessage ay_msg(ayChannel);
+OSCMessage az_msg(azChannel);
+
+OSCMessage qx_msg(qxChannel);
+OSCMessage qy_msg(qyChannel);
+OSCMessage qz_msg(qzChannel);
+OSCMessage qw_msg(qwChannel);  
+
+float acceleration = 0.0;
+
+float oldQX = 0.0;
+float oldQY = 0.0;
+float oldQZ = 0.0;
+float oldQW = 0.0;
+float newQX = 0.0;
+float newQY = 0.0;
+float newQZ = 0.0;
+float newQW = 0.0;
+
 void publishOrientationAcceleration() {
   /* ACCELERATION */
     imu::Vector<3> acceleration = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-    ax_msg.add(float(acceleration.x()));
-    ay_msg.add(float(acceleration.y()));
-    az_msg.add(float(acceleration.z()));
+    float ax = float(acceleration.x());
+    float ay = float(acceleration.y());
+    float az = float(acceleration.y());
+    ax_msg.add(ax);
+    ay_msg.add(ay);
+    az_msg.add(az);
+    float accel = abs(ax) + abs(ay) + abs(az); 
+    accel = min((accel/20.), 1.0);
     
 //  /* QUATERNION */
     imu::Quaternion quat = bno.getQuat();  
-    qx_msg.add(float(quat.x()));
-    qy_msg.add(float(quat.y()));
-    qz_msg.add(float(quat.z()));
-    qw_msg.add(float(quat.w()));
+    newQX = float(quat.x());
+    newQY = float(quat.y());
+    newQZ = float(quat.z());
+    newQW = float(quat.w());
+    qx_msg.add(newQX);
+    qy_msg.add(newQY);
+    qz_msg.add(newQZ);
+    qw_msg.add(newQW);
+    float rotationalAccel = abs(oldQX - newQX) + abs(oldQY - newQY) + abs(oldQZ - newQZ);
+    rotationalAccel = min(rotationalAccel, 1.0);
     
     Udp.beginPacket(outIp, outPort);
     ax_msg.send(Udp); // send the bytes to the SLIP stream
@@ -119,7 +140,13 @@ void publishOrientationAcceleration() {
     Udp.endPacket(); // mark the end of the OSC Packet
     qw_msg.empty(); // free space occupied by message                    
 
-  delay(BNO055_SAMPLERATE_DELAY_MS);
+    int vibration = round(((accel * .0) + (rotationalAccel * 1)) * 127);
+    drv.setRealtimeValue(vibration);
+    oldQX = newQX;
+    oldQY = newQY;
+    oldQZ = newQZ;
+    oldQW = newQW;    
+    delay(BNO055_SAMPLERATE_DELAY_MS);
 }
 
 void onClientInitialized() {
@@ -167,6 +194,8 @@ void setup() {
   bnoWorking = bno.begin();
   if(!bnoWorking)
   {
+    OSCMessage error_bno_msg(bnoErrorChannel);
+//OSCMessage error_drv_msg(drvErrorChannel);
     error_bno_msg.add(1);
     Udp.beginPacket(outIp, outPort);
     error_bno_msg.send(Udp);
@@ -181,21 +210,21 @@ void setup() {
     /* Display some basic information on this sensor */
     displaySensorDetails();
   
-    bno.setExtCrystalUse(true);         
+    bno.setExtCrystalUse(true); 
   } 
 
 
   drv.begin();
   Serial.println("DRV detected");    
-  Serial.println("");  
-  drv.selectLibrary(1);
-  drv.setMode(DRV2605_MODE_INTTRIG);     
+  Serial.println("");      
+  drv.setMode(DRV2605_MODE_REALTIME);
 
   onClientInitialized();  
 }
 
 void reboot(OSCMessage &msg, int addrOffset) {
   if (int(msg.getFloat(0)) == 0) return;
+  Serial.println("received");
   OSCBundle bndl;
   bndl.add(rebootingChannel).add(1);
   bndl.add(initializedChannel).add(0);
@@ -208,18 +237,7 @@ void reboot(OSCMessage &msg, int addrOffset) {
   ESP.restart();
 }
 
-void vibrate(OSCMessage &msg, int addrOffset) {
-  int newVibration = int(msg.getFloat(0));  
-    Serial.println(newVibration);
-
-  if (currentVibration == newVibration) return;
-
-  drv.setWaveform(0, newVibration);
-  currentVibration = newVibration;
-}
-
 void loop() {
-    drv.go();
 
    OSCBundle bundleIN;
    int size = Udp.parsePacket();
@@ -229,9 +247,7 @@ void loop() {
        bundleIN.fill(Udp.read());
       if(!bundleIN.hasError()) {
         bundleIN.route("/spatial/10_10_1_2/reboot", reboot);
-        bundleIN.route("/reboot", reboot);        
-        bundleIN.route("/spatial/10_10_1_2/vibrate", vibrate);                        
-        bundleIN.route("/vibrate", vibrate);     
+        bundleIN.route("/reboot", reboot); 
       }
       
       Udp.flush();
